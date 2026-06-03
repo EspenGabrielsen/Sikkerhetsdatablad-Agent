@@ -25,19 +25,20 @@ DEFAULT_DB_PATH = "sikkerhetsdatablad.db"
 
 _CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS sds_results (
-    source_url              TEXT PRIMARY KEY,
-    product_name            TEXT,
-    revision_date           TEXT,
-    un_number               TEXT,
-    proper_shipping_name    TEXT,
-    transport_hazard_class  TEXT,
-    packing_group           TEXT,
-    environmental_hazards   TEXT,
+    source_url                  TEXT PRIMARY KEY,
+    product_name                TEXT,
+    revision_date               TEXT,
+    un_number                   TEXT,
+    proper_shipping_name        TEXT,
+    transport_hazard_class      TEXT,
+    adr_rid_classification_code TEXT,
+    packing_group               TEXT,
+    environmental_hazards       TEXT,
     special_precautions_for_user TEXT,
-    bulk_transport          TEXT,
-    notes                   TEXT,
-    created_at              TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at              TEXT NOT NULL DEFAULT (datetime('now'))
+    bulk_transport              TEXT,
+    notes                       TEXT,
+    created_at                  TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at                  TEXT NOT NULL DEFAULT (datetime('now'))
 )
 """
 
@@ -49,19 +50,21 @@ INSERT INTO sds_results (
     un_number,
     proper_shipping_name,
     transport_hazard_class,
+    adr_rid_classification_code,
     packing_group,
     environmental_hazards,
     special_precautions_for_user,
     bulk_transport,
     notes,
     updated_at
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
 ON CONFLICT(source_url) DO UPDATE SET
     product_name                = excluded.product_name,
     revision_date               = excluded.revision_date,
     un_number                   = excluded.un_number,
     proper_shipping_name        = excluded.proper_shipping_name,
     transport_hazard_class      = excluded.transport_hazard_class,
+    adr_rid_classification_code = excluded.adr_rid_classification_code,
     packing_group               = excluded.packing_group,
     environmental_hazards       = excluded.environmental_hazards,
     special_precautions_for_user = excluded.special_precautions_for_user,
@@ -110,6 +113,7 @@ def upsert_result(conn: sqlite3.Connection, data: SDSData) -> None:
             flat["un_number"],
             flat["proper_shipping_name"],
             flat["transport_hazard_class"],
+            flat["adr_rid_classification_code"],
             flat["packing_group"],
             flat["environmental_hazards"],
             flat["special_precautions_for_user"],

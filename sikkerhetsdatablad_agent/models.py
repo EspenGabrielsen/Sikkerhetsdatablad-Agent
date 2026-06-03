@@ -22,6 +22,14 @@ class Section14(BaseModel):
             "Inkluder eventuelle underklasser separert med komma."
         ),
     )
+    adr_rid_classification_code: Optional[str] = Field(
+        None,
+        description=(
+            "ADR/RID-klassifiseringskode, f.eks. '5F' eller '5E'. "
+            "Står ofte som 'ADR/RID - 5F' eller 'Klassifiseringskode: 5F' "
+            "under 14.3 Transportfareklasse(r). Null hvis ikke oppgitt."
+        ),
+    )
     packing_group: Optional[str] = Field(
         None,
         description="14.4 Emballasjegruppe (Packing Group), f.eks. 'II' eller 'III'.",
@@ -81,6 +89,7 @@ class SDSData(BaseModel):
             "un_number": self.section14.un_number,
             "proper_shipping_name": self.section14.proper_shipping_name,
             "transport_hazard_class": self.section14.transport_hazard_class,
+            "adr_rid_classification_code": self.section14.adr_rid_classification_code,
             "packing_group": self.section14.packing_group,
             "environmental_hazards": self.section14.environmental_hazards,
             "special_precautions_for_user": self.section14.special_precautions_for_user,

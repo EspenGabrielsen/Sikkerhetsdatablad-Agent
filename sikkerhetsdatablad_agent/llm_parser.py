@@ -19,6 +19,9 @@ Retningslinjer:
 - Hvis et felt ikke finnes i teksten, bruk null.
 - Konverter datoer til ISO-format (ÅÅÅÅ-MM-DD) hvis mulig, ellers behold originalformatet.
 - For 14.3 transportfareklasse: inkluder eventuelle underklasser, f.eks. "3" eller "3, 6.1".
+- For adr_rid_classification_code: se etter "ADR/RID - 5F", "Klassifiseringskode: 5F"
+  eller lignende under 14.3 Transportfareklasse(r). Dette er ADR/RID-klassifiseringskoden
+  (f.eks. 5F, 5E, 6F, osv.). Sett til null hvis ikke oppgitt.
 - Produktnavnet finnes typisk i seksjon 1 (IDENTIFIKASJON) eller i dokumenthoder.
 - Revisjonsdatoen finnes typisk som "Revisjonsdato:", "Revision date:", "Utarbeidet:" o.l.
   i dokumentets topptekst, bunntekst, forside eller seksjon 1.

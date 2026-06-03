@@ -203,6 +203,7 @@ def _print_summary(result: SDSData) -> None:
     print(f"  14.1 UN-nr    : {s.un_number or '—'}")
     print(f"  14.2 Navn     : {s.proper_shipping_name or '—'}")
     print(f"  14.3 Klasse   : {s.transport_hazard_class or '—'}")
+    print(f"  14.3 ADR/RID  : {s.adr_rid_classification_code or '—'}")
     print(f"  14.4 Emb.gr.  : {s.packing_group or '—'}")
     print(f"  14.5 Miljø    : {s.environmental_hazards or '—'}")
     print(f"  14.6 Forholdr.: {s.special_precautions_for_user or '—'}")

@@ -30,3 +30,6 @@ Thumbs.db
 
 # --- Temp files from PDF downloads ---
 sds_*.pdf
+*.txt
+*.db-shm
+*.db-wal
