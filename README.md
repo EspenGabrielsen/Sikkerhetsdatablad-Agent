@@ -172,6 +172,57 @@ WHERE source_url = 'https://...';
 
 ---
 
+## UNECE ADR Table A — Dangerous Goods List
+
+This project also includes a script to extract **Table A: Dangerous Goods List** from the official UNECE ADR 2025 publication.
+
+The table spans pages 300–531 of the PDF. Because the table is too wide for A4 format, each spread consists of two pages that must be concatenated horizontally — the left page contains columns (1)–(14) and the right page contains columns (15)–(20).
+
+### Source
+
+- **Original PDF**: [2412006_E_ECE_TRANS_352_Vol.I_WEB_0.pdf](https://unece.org/sites/default/files/2025-01/2412006_E_ECE_TRANS_352_Vol.I_WEB_0.pdf)
+  (Download manually if needed — the UNECE server may block automated requests.)
+
+### Usage
+
+```bash
+# 1. Download the PDF manually from the link above
+# 2. Update the PDF_PATH in unece_table_a.py to point to your local copy
+# 3. Run the extraction script
+python unece_table_a.py
+```
+
+This will produce:
+- `table_a_dangerous_goods.csv` — all ~3 500+ rows with 20 columns
+- `table_a_dangerous_goods.xlsx` — same data in Excel format (if `openpyxl` is installed)
+
+### Output columns
+
+| # | Column | ADR Ref |
+|---|--------|---------|
+| 1 | UN_No | (1) |
+| 2 | Name_and_description | (2) |
+| 3 | Class | (3a) |
+| 4 | Classification_code | (3b) |
+| 5 | Packing_group | (4) |
+| 6 | Labels | (5) |
+| 7 | Special_provisions | (6) |
+| 8 | Limited_quantities | (7a) |
+| 9 | Excepted_quantities | (7b) |
+| 10 | Packaging_instructions | (8) |
+| 11 | Special_packing_provisions | (9a) |
+| 12 | Mixed_packing_provisions | (9b) |
+| 13 | Portable_tank_instructions | (10) |
+| 14 | Portable_tank_special_prov | (11) |
+| 15 | ADR_tank_code | (12) |
+| 16 | Tank_special_provisions | (13) |
+| 17 | Vehicle_tank_code | (14) |
+| 18 | Transport_category | (15) |
+| 19 | Tunnel_restriction_code | (16) |
+| 20 | Hazard_identification_No | (19) |
+
+---
+
 ## Project structure
 
 ```
