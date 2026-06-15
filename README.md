@@ -187,9 +187,9 @@ The table spans pages 300–531 of the PDF. Because the table is too wide for A4
 
 ```bash
 # 1. Download the PDF manually from the link above
-# 2. Update the PDF_PATH in unece_table_a.py to point to your local copy
+# 2. Update the PDF_PATH in scripts/unece_table_a.py to point to your local copy
 # 3. Run the extraction script
-python unece_table_a.py
+python scripts/unece_table_a.py
 ```
 
 This will produce:
@@ -227,21 +227,68 @@ This will produce:
 
 ```
 Sikkerhetsdatablad-Agent/
-├── sikkerhetsdatablad_agent/   # Python package
+├── src/                                    # Source code (src-layout)
+│   └── sikkerhetsdatablad_agent/           # Python package
+│       ├── __init__.py
+│       ├── main.py          # CLI entry point
+│       ├── config.py        # LLM provider configuration
+│       ├── database.py      # SQLite upsert layer
+│       ├── extractor.py     # PDF text extraction (Section 14 regex)
+│       ├── fetcher.py       # PDF download with retries
+│       ├── llm_parser.py    # LLM prompt building & response parsing
+│       ├── models.py        # Pydantic data models (SDSData, Section14)
+│       └── output.py        # CSV / Excel export
+├── scripts/                                # Utility scripts
+│   ├── unece_table_a.py     # UNECE ADR Table A extraction
+│   └── inspect_unece.py     # PDF structure inspection
+├── tests/                                  # Unit tests
 │   ├── __init__.py
-│   ├── main.py          # CLI entry point
-│   ├── config.py        # LLM provider configuration
-│   ├── database.py      # SQLite upsert layer
-│   ├── extractor.py     # PDF text extraction (Section 14 regex)
-│   ├── fetcher.py       # PDF download with retries
-│   ├── llm_parser.py    # LLM prompt building & response parsing
-│   ├── models.py        # Pydantic data models (SDSData, Section14)
-│   └── output.py        # CSV / Excel export
-├── .env.example         # Environment variable template
+│   ├── test_models.py       # Tests for Pydantic models
+│   ├── test_extractor.py    # Tests for regex extraction
+│   └── test_output.py       # Tests for CSV/Excel export
+├── data/                                   # Large data files (gitignored)
+├── docs/                                   # Documentation
+├── .env.example            # Environment variable template
 ├── .gitignore
-├── pyproject.toml       # Package build configuration
-├── requirements.txt     # Python dependencies
-└── README.md            # This file
+├── pyproject.toml          # Package build configuration
+├── requirements.txt        # Python dependencies
+├── Makefile                # Development tasks (install, test, lint, clean)
+└── README.md               # This file
+```
+
+---
+
+## Development
+
+### Setup
+
+```bash
+# Install in editable mode with dev dependencies
+make install-dev
+
+# Or manually:
+pip install -e .
+pip install pytest pytest-mock ruff
+```
+
+### Run tests
+
+```bash
+make test
+# Or: python -m pytest tests/ -v
+```
+
+### Lint
+
+```bash
+make lint
+# Or: ruff check src/ tests/ scripts/
+```
+
+### Clean build artifacts
+
+```bash
+make clean
 ```
 
 ---

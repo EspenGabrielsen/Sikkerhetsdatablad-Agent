@@ -24,4 +24,5 @@ dependencies = [
 sds-agent = "sikkerhetsdatablad_agent.main:main"
 
 [tool.setuptools.packages.find]
+where = ["src"]
 include = ["sikkerhetsdatablad_agent*"]

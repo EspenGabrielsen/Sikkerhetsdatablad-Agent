@@ -33,3 +33,6 @@ sds_*.pdf
 *.txt
 *.db-shm
 *.db-wal
+
+# --- Data directory (large files) ---
+data/

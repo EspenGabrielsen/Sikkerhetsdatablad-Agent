@@ -1,7 +1,7 @@
 """
 Extract "Table A: Dangerous Goods List" from the UNECE ADR 2025 PDF.
 
-The table spans pages 300-531 (0-indexed: 299-530).
+The table spans pages 300-551 (0-indexed: 299-550).
 Each spread (2 pages) contains the left half (cols 1-14) and right half (cols 15-20).
 These must be concatenated horizontally to form complete rows.
 """
@@ -21,7 +21,7 @@ OUTPUT_XLSX = Path(__file__).parent / "table_a_dangerous_goods.xlsx"
 
 # Page range (0-indexed)
 FIRST_PAGE = 299  # page 300 in PDF (first data page)
-LAST_PAGE = 530  # page 531 in PDF (last data page)
+LAST_PAGE = 550  # page 551 in PDF (last data page)
 
 # Column headers (20 unique columns)
 COLUMN_NAMES = [
