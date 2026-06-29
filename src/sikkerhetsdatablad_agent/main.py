@@ -19,6 +19,7 @@ import logging
 import os
 import sys
 import tempfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Optional
 
@@ -121,6 +122,13 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--workers",
+        metavar="N",
+        type=int,
+        default=5,
+        help="Antall parallelle tråder ved batch-behandling. Standard: 5.",
+    )
+    parser.add_argument(
         "--verbose",
         action="store_true",
         help="Aktiver DEBUG-logging.",
@@ -144,6 +152,25 @@ def load_urls_from_file(path: str) -> list[str]:
     return urls
 
 
+def _process_and_upsert(
+    url: str,
+    db_path: str,
+) -> tuple[str, Optional[SDSData]]:
+    """
+    Trådsikker variant: oppretter egen DB-tilkobling per tråd,
+    prosesserer URL-en og upsert-er resultatet umiddelbart.
+    Returnerer (url, SDSData | None).
+    """
+    result = process_url(url)
+    if result is not None:
+        conn = get_connection(db_path)
+        try:
+            upsert_result(conn, result)
+        finally:
+            conn.close()
+    return url, result
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
@@ -157,28 +184,55 @@ def main() -> None:
     else:
         urls = load_urls_from_file(args.batch)
 
-    # Åpne SQLite-database (opprettes automatisk hvis den ikke finnes)
+    # Initialiser databasen (hovedtråd)
     db_path = args.db or os.getenv("DATABASE_PATH", DEFAULT_DB_PATH)
     db_conn = get_connection(db_path)
     init_db(db_conn)
+    db_conn.close()
     logger.info("Database: %s", db_path)
 
-    # Behandle alle URLer
+    # Behandle alle URLer — parallelt ved batch, sekvensielt ved enkelt-URL
     results: list[SDSData] = []
     failed = 0
 
-    for url in tqdm(urls, desc="Behandler", unit="dok", disable=len(urls) == 1):
-        result = process_url(url)
+    if len(urls) == 1:
+        # Enkelt-URL: sekvensielt (beholder fin utskrift)
+        result = process_url(urls[0])
         if result is not None:
             results.append(result)
-            # Upsert umiddelbart – sikrer at delresultater lagres selv ved avbrudd
-            upsert_result(db_conn, result)
-            if len(urls) == 1:
-                _print_summary(result)
+            _print_summary(result)
+            # Upsert
+            conn = get_connection(db_path)
+            try:
+                upsert_result(conn, result)
+            finally:
+                conn.close()
         else:
             failed += 1
+    else:
+        # Batch: parallelt med ThreadPoolExecutor
+        workers = max(1, args.workers)
+        logger.info("Starter batch med %d tråder (%d dokumenter).", workers, len(urls))
 
-    db_conn.close()
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {
+                executor.submit(_process_and_upsert, url, db_path): url for url in urls
+            }
+
+            with tqdm(total=len(urls), desc="Behandler", unit="dok") as pbar:
+                for future in as_completed(futures):
+                    url = futures[future]
+                    try:
+                        _url, result = future.result()
+                        if result is not None:
+                            results.append(result)
+                        else:
+                            failed += 1
+                    except Exception as exc:
+                        logger.error("Kritisk feil i tråd for '%s': %s", url, exc)
+                        failed += 1
+                    finally:
+                        pbar.update(1)
 
     # Lagre CSV/Excel
     if results:
