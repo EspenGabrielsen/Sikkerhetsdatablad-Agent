@@ -303,4 +303,4 @@ make clean
 
 ## License
 
-Internal use — Saint-Gobain.
+MIT License — see [LICENSE](LICENSE) for details.

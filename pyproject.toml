@@ -7,7 +7,7 @@ name = "sikkerhetsdatablad-agent"
 version = "1.0.0"
 description = "Extract Section 14 (Transport Information) and revision dates from Safety Data Sheet (SDS) PDFs using LLMs."
 readme = "README.md"
-license = {text = "Proprietary"}
+license = {text = "MIT"}
 requires-python = ">=3.10"
 dependencies = [
     "pdfplumber",
